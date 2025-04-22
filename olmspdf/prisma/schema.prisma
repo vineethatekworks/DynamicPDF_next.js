@@ -24,6 +24,9 @@ model FormData {
   postalAddress   String?
   phoneNumber     String?
   aadhaarNumber   String?
+   // Nominator relation
+  nominatedById   String?
+  nominatedBy     User?     @relation("UserNominations", fields: [nominatedById], references: [id])
   createdAt       DateTime @default(now())
 }
 
@@ -33,19 +36,12 @@ enum ROLE {
 }
 
 model User {
-  id                      String   @id @default(cuid())
+  id                      String   @id @default(uuid())
   username                String
-  email                   String   @unique
-  password                String
-  isVerified              Boolean  @default(false)
+  useremail                   String   @unique
+  userpassword                String
   role                    ROLE     @default(USER) 
-
-  forgotPasswordToken     String?
-  forgotPasswordTokenExpiry DateTime?
-
-  verifyToken             String?
-  verifyTokenExpiry       DateTime?
-
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
+  nominations FormData[] @relation("UserNominations")
 }

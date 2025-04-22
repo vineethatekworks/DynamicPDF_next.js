@@ -1,6 +1,37 @@
 // deno-lint-ignore-file
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 export function getHtmlTemplate(data: any): string {
+  // Helper function to handle null or undefined values with a default
+  function safeValue(value: any, defaultValue: string = 'N/A'): string {
+    if (value === null || value === undefined) {
+      return defaultValue;
+    }
+    return value;
+  }
+
+  // Define all fields as metadata for better maintainability
+  const fields = [
+    { label: "Name of the person", key: "name" },
+    { label: "Father’s name", key: "fatherName" },
+    { label: "Age", key: "age" },
+    { label: "Designation", key: "designation" },
+    { label: "Residential address", key: "address" },
+    { label: "Postal address", key: "postalAddress" },
+    { label: "Phone number", key: "phoneNumber" },
+    { label: "Aadhaar number", key: "aadhaarNumber" }
+  ];
+
+  // Function to generate the details section dynamically
+  function generateDetailsHtml(data: any, fields: { label: string, key: string }[]) {
+    return fields.map((f, i) => {
+      const value = data[f.key];
+      return value
+        ? `<p>${i + 1}. <span class="bold">${f.label}</span> : ${safeValue(value)}</p>`
+        : '';
+    }).join('');
+  }
+
   return `
     <html>
       <head>
@@ -44,20 +75,13 @@ export function getHtmlTemplate(data: any): string {
           <h2>Nomination Form</h2>
 
           <div class="content">
-            <p>Certified that I/We have nominated Sri <span class="bold">${data.name}</span></p>
-            <p>S/o <span class="bold">${data.fatherName}</span> as a person responsible for the conduct of our organization.</p>
+            <p>Certified that I/We have nominated Sri <span class="bold">${safeValue(data.name)}</span></p>
+            <p>S/o <span class="bold">${safeValue(data.fatherName)}</span> as a person responsible for the conduct of our organization.</p>
             <p>He will represent our organization in the event of any legal requirement. In case the designated person leaves the organization, I hereby admit that I will be responsible for any obligations.</p>
           </div>
 
           <div class="details">
-            <p>1. <span class="bold">Name of the person</span> : ${data.name}</p>
-            <p>2. <span class="bold">Father’s name</span> : ${data.fatherName}</p>
-            <p>3. <span class="bold">Age</span> : ${data.age}</p>
-            <p>4. <span class="bold">Designation</span> : ${data.designation}</p>
-            <p>5. <span class="bold">Residential address</span> : ${data.address}</p>
-            <p>6. <span class="bold">Postal address</span> : ${data.postalAddress}</p>
-            <p>7. <span class="bold">Phone number</span> : ${data.phoneNumber}</p>
-            <p>8. <span class="bold">Aadhaar number</span> : ${data.aadhaarNumber}</p>
+            ${generateDetailsHtml(data, fields)}
           </div>
 
           <div class="signature">

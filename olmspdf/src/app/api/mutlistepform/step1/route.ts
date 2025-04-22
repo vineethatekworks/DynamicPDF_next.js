@@ -1,7 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // app/api/step1/route.ts
-import { prisma } from "../../../../lib/prisma.ts";
+import { requireAuth } from "../../../../../lib/middleware/requireAuth.ts";
+import { prisma } from "../../../../../lib/prisma.ts";
 
 export async function POST(req: Request) {
+
+  const authResult = await requireAuth(req);
+  if (authResult instanceof Response) return authResult;
+  
+  const {userId} = authResult.user;
   const { name, fatherName, age , email } = await req.json();
 
   // Validate input data
@@ -16,6 +23,7 @@ export async function POST(req: Request) {
         fatherName,
         age,
         email, 
+        nominatedById:userId
       },
     });
 

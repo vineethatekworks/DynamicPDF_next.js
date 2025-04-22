@@ -1,5 +1,7 @@
+// deno-lint-ignore-file
 /* eslint-disable no-var */
 import { PrismaClient } from "@prisma/client";
+import process from "node:process";
 
 declare global {
   var prisma: PrismaClient | undefined;
