@@ -1,15 +1,16 @@
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { Buffer } from "node:buffer";
 import { Readable } from "node:stream";
+import process from "node:process";
 
 
 // Directly provide AWS credentials and region in the code
 const s3 = new S3Client({
     region: "ap-south-1",
     credentials: {
-        accessKeyId: "AKIA4SZHN57FBUNOKY6N",
-        secretAccessKey: "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",
-    },
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    }
 });
 
 const BUCKET_NAME = "s3-nomination-forms";
