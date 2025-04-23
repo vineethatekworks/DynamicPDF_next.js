@@ -32,12 +32,14 @@ function createMailOptions(to: string, buffer: Buffer) {
 }
 
 // Final function to send the email
-export async function sendMailWithPDF(to: string, buffer: Buffer) {
+export async function sendMailWithPDF(buffer: Buffer, to: string) {
   try {
     const transporter = createGmailTransporter();
+
     const mailOptions = createMailOptions(to, buffer);
     await transporter.sendMail(mailOptions);
     console.log(" Email sent successfully.");
+    return true;
   } catch (error) {
     const err = error as Error;
     throw new Error(`Something went wrong while sending the email. Details: ${err.message}`);

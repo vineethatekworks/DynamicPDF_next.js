@@ -1,36 +1,9 @@
 // deno-lint-ignore-file
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 export function getHtmlTemplate(data: any): string {
-  // Helper function to handle null or undefined values with a default
-  function safeValue(value: any, defaultValue: string = 'N/A'): string {
-    if (value === null || value === undefined) {
-      return defaultValue;
-    }
-    return value;
-  }
-
-  // Define all fields as metadata for better maintainability
-  const fields = [
-    { label: "Name of the person", key: "name" },
-    { label: "Father’s name", key: "fatherName" },
-    { label: "Age", key: "age" },
-    { label: "Designation", key: "designation" },
-    { label: "Residential address", key: "address" },
-    { label: "Postal address", key: "postalAddress" },
-    { label: "Phone number", key: "phoneNumber" },
-    { label: "Aadhaar number", key: "aadhaarNumber" }
-  ];
-
-  // Function to generate the details section dynamically
-  function generateDetailsHtml(data: any, fields: { label: string, key: string }[]) {
-    return fields.map((f, i) => {
-      const value = data[f.key];
-      return value
-        ? `<p>${i + 1}. <span class="bold">${f.label}</span> : ${safeValue(value)}</p>`
-        : '';
-    }).join('');
-  }
+  // Handle null/undefined/empty values with fallback
+  const safeValue = (value: any, fallback = 'N/A') =>
+    value !== null && value !== undefined && value !== '' ? value : fallback;
 
   return `
     <html>
@@ -41,7 +14,7 @@ export function getHtmlTemplate(data: any): string {
             margin: 0;
             padding: 40px;
             background-color: #f9f9f9;
-            border: 20px solid #2e7d32; /* Thicker green border around the whole page */
+            border: 20px solid #2e7d32;
           }
           .container {
             padding: 30px;
@@ -81,7 +54,14 @@ export function getHtmlTemplate(data: any): string {
           </div>
 
           <div class="details">
-            ${generateDetailsHtml(data, fields)}
+            <p>1. <span class="bold">Name of the person</span> : ${safeValue(data.name)}</p>
+            <p>2. <span class="bold">Father’s name</span> : ${safeValue(data.fatherName)}</p>
+            <p>3. <span class="bold">Age</span> : ${safeValue(data.age)}</p>
+            <p>4. <span class="bold">Designation</span> : ${safeValue(data.designation)}</p>
+            <p>5. <span class="bold">Residential address</span> : ${safeValue(data.address)}</p>
+            <p>6. <span class="bold">Postal address</span> : ${safeValue(data.postalAddress)}</p>
+            <p>7. <span class="bold">Phone number</span> : ${safeValue(data.phoneNumber)}</p>
+            <p>8. <span class="bold">Aadhaar number</span> : ${safeValue(data.aadhaarNumber)}</p>
           </div>
 
           <div class="signature">

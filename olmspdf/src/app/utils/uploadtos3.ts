@@ -1,0 +1,63 @@
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { Buffer } from "node:buffer";
+import { Readable } from "node:stream";
+
+
+// Directly provide AWS credentials and region in the code
+const s3 = new S3Client({
+    region: "ap-south-1",
+    credentials: {
+        accessKeyId: "AKIA4SZHN57FBUNOKY6N",
+        secretAccessKey: "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",
+    },
+});
+
+const BUCKET_NAME = "s3-nomination-forms";
+
+export async function uploadAndGetPdfUrl(pdfBuffer: Buffer, formId: string): Promise<string> {
+    const key = `pdfs/${formId}.pdf`;
+
+    try {
+        // Upload the PDF to the S3 bucket
+        await s3.send(
+            new PutObjectCommand({
+                Bucket: BUCKET_NAME,
+                Key: key,
+                Body: pdfBuffer,
+                ContentType: "application/pdf",
+            })
+        );
+
+        // Generate the public URL for the uploaded PDF
+        const pdfUrl = `https://${BUCKET_NAME}.s3.${"ap-south-1"}.amazonaws.com/${key}`;
+        return pdfUrl;
+
+    } catch (error) {
+        console.error("Error uploading PDF to S3:", error);
+        throw new Error("Failed to upload PDF to S3");
+    }
+}
+
+export async function getPDFFromS3(formId: string): Promise<Buffer | null> {
+  const pdfKey = `pdfs/${formId}.pdf`;
+
+  try {
+    const command = new GetObjectCommand({
+      Bucket: "s3-nomination-forms",
+      Key: pdfKey,
+    });
+
+    const response = await s3.send(command);
+    const stream = response.Body as Readable;
+
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of stream) {
+      chunks.push(chunk);
+    }
+
+    return Buffer.concat(chunks); 
+  } catch (err) {
+    console.error("Failed to download PDF:", err);
+    return null; 
+  }
+}
